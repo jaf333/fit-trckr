@@ -3,11 +3,13 @@ import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { validateRequest } from '../middleware/validate';
+import { userSchema } from '../validators/schemas';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.post('/register', async (req, res) => {
+router.post('/register', validateRequest(userSchema), async (req, res) => {
   try {
     const { email, password, name } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);

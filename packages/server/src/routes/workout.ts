@@ -1,11 +1,13 @@
 // src/routes/workout.ts
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { validateRequest } from '../middleware/validate';
+import { workoutSchema } from '../validators/schemas'
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.post('/', async (req, res) => {
+router.post('/', validateRequest(workoutSchema), async (req, res) => {
   try {
     const { name, date, exercises } = req.body;
     const userId = (req.user as any).userId;

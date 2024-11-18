@@ -2,11 +2,13 @@
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authMiddleware } from '../middleware/auth';
+import { validateRequest } from '../middleware/validate';
+import { profileSchema } from '../validators/schemas';
 
 const router = Router();
 const prisma = new PrismaClient();
 
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validateRequest(profileSchema), async (req, res) => {
   try {
     const { height, weight, goalWeight, birthDate, gender } = req.body;
     const userId = req.user!.userId;
