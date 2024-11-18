@@ -1,12 +1,24 @@
 {
-  "name": "fit-trckr",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "fit-trackr",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:web": "npm run dev --workspace=@fit-trackr/web",
+    "dev:server": "npm run dev --workspace=@fit-trackr/server",
+    "dev:mobile": "npm run dev --workspace=@fit-trackr/mobile",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^8.10.0",
+    "prettier": "^2.8.8",
+    "typescript": "^5.0.4"
+  }
 }
