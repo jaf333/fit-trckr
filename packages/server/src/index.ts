@@ -5,6 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import { userRouter } from './routes/user';
 import { workoutRouter } from './routes/workout';
 import { authMiddleware } from './middleware/auth';
+import { profileRouter } from './routes/profile';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -19,6 +20,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/users', userRouter);
 app.use('/api/workouts', authMiddleware, workoutRouter);
+app.use('/api/profile', profileRouter);
 
 app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error(error.stack);
