@@ -1,6 +1,8 @@
 // packages/server/src/app.ts
 import express from 'express';
 import cors from 'cors';
+import swaggerUi from 'swagger-ui-express';
+import { specs } from './config/swagger';
 import { userRouter } from './routes/user';
 import { workoutRouter } from './routes/workout';
 import { authMiddleware } from './middleware/auth';
@@ -15,6 +17,9 @@ app.use(express.json());
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
+
+// Swagger documentation route
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use('/api/users', userRouter);
 app.use('/api/workouts', authMiddleware, workoutRouter);
