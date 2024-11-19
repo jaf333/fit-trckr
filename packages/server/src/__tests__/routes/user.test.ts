@@ -1,25 +1,43 @@
 // packages/server/src/__tests__/routes/user.test.ts
 import { NextFunction, Request, Response } from 'express';
-import { prismaMock } from '../../config/prisma';
 import request from 'supertest';
-import app from '../../app';  // Necesitaremos crear este archivo
-import jwt from 'jsonwebtoken';
-import bcryptjs from 'bcryptjs';
+import { prismaMock } from '../../config/prisma';
+import app from '../../app';
+import { jest, expect, describe, it, beforeEach } from '@jest/globals';
+import * as bcryptjs from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
 
-jest.mock('jsonwebtoken');
-jest.mock('bcryptjs');
+// Mock implementations
+const mockBcrypt = {
+  hash: jest.fn(),
+  compare: jest.fn()
+};
+
+const mockJwt = {
+  sign: jest.fn()
+};
+
+jest.mock('bcryptjs', () => mockBcrypt);
+jest.mock('jsonwebtoken', () => mockJwt);
 
 describe('User Routes', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let nextFunction: NextFunction = jest.fn();
+  let nextFunction: NextFunction;
 
   beforeEach(() => {
     mockRequest = {};
     mockResponse = {
-      json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
+      json: jest.fn().mockReturnThis(),
+      status: jest.fn().mockReturnThis()
     };
+    nextFunction = jest.fn();
+
+    // Reset mock implementations
+    jest.clearAllMocks();
+    mockBcrypt.hash.mockReset();
+    mockBcrypt.compare.mockReset();
+    mockJwt.sign.mockReset();
   });
 
   describe('POST /api/users/register', () => {
@@ -31,7 +49,7 @@ describe('User Routes', () => {
 
     it('should register a new user successfully', async () => {
       const hashedPassword = 'hashedPassword123';
-      (bcryptjs.hash as jest.Mock).mockResolvedValue(hashedPassword);
+      mockBcrypt.hash.mockResolvedValue(hashedPassword);
 
       prismaMock.user.create.mockResolvedValue({
         id: '1',
@@ -55,7 +73,7 @@ describe('User Routes', () => {
     it('should return 400 for invalid user data', async () => {
       const invalidUser = {
         email: 'invalid-email',
-        password: '123'  // too short
+        password: '123'
       };
 
       const response = await request(app)
@@ -92,14 +110,13 @@ describe('User Routes', () => {
     };
 
     it('should login successfully with valid credentials', async () => {
-      const hashedPassword = 'hashedPassword123';
-      (bcryptjs.compare as jest.Mock).mockResolvedValue(true);
-      (jwt.sign as jest.Mock).mockReturnValue('mock-token');
+      mockBcrypt.compare.mockResolvedValue(true);
+      mockJwt.sign.mockReturnValue('mock-token');
 
       prismaMock.user.findUnique.mockResolvedValue({
         id: '1',
         email: validCredentials.email,
-        password: hashedPassword,
+        password: 'hashedPassword',
         name: 'Test User',
         createdAt: new Date(),
         updatedAt: new Date()
@@ -115,7 +132,7 @@ describe('User Routes', () => {
     });
 
     it('should return 401 for invalid credentials', async () => {
-      (bcryptjs.compare as jest.Mock).mockResolvedValue(false);
+      mockBcrypt.compare.mockResolvedValue(false);
 
       prismaMock.user.findUnique.mockResolvedValue({
         id: '1',

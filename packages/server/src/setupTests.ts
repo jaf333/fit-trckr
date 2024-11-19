@@ -1,12 +1,12 @@
 // packages/server/src/setupTests.ts
-import '@testing-library/jest-dom';
-import { prismaMock } from './config/prisma';
+import { PrismaClient } from '@prisma/client';
+import { mockDeep, DeepMockProxy } from 'jest-mock-extended';
+
+export const prismaMock = mockDeep<PrismaClient>();
 
 jest.mock('./config/prisma', () => ({
   __esModule: true,
-  default: prismaMock,
   prisma: prismaMock,
-  prismaMock: prismaMock
 }));
 
 beforeEach(() => {
