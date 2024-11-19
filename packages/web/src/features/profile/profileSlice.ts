@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { Profile, ProfileFormData, ProfileUpdateData } from '../../types/profile';
-import axios from 'axios';
+import type { Profile, ProfileFormData } from '../../types/profile';
+import type { ProfileState } from '../../types/store';
+
+const initialState: ProfileState = {
+  data: null,
+  loading: false,
+  error: null,
+};
 
 interface ProfileState {
   data: Profile | null;
@@ -8,11 +14,7 @@ interface ProfileState {
   error: string | null;
 }
 
-const initialState: ProfileState = {
-  data: null,
-  loading: false,
-  error: null,
-};
+
 
 export const fetchProfile = createAsyncThunk(
   'profile/fetchProfile',

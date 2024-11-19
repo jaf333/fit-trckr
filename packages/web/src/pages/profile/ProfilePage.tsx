@@ -2,12 +2,14 @@ import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchProfile, createProfile, updateProfile } from '../../features/profile/profileSlice';
 import { ProfileForm } from '../../components/forms/ProfileForm/ProfileForm';
-import { Card } from '../../components/ui/Card';
+import { Card } from '@/components/ui';
 import type { ProfileFormData } from '../../types/profile';
+import type { RootState } from '../../types/store';
+
 
 export const ProfilePage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { data: profile, loading, error } = useAppSelector(state => state.profile);
+  const { data: profile, loading, error } = useAppSelector((state: RootState) => state.profile);
 
   useEffect(() => {
     dispatch(fetchProfile());

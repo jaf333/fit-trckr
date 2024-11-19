@@ -1,4 +1,5 @@
-// src/components/ui/index.ts
-export * from './Button/Button';
-export * from './Input/Input';
-export * from './Card/Card';
+export { Button } from './Button';
+export type { ButtonProps } from './Button';
+export { Input } from './Input';
+export { Card } from './Card';
+export type { CardProps } from './Card';
