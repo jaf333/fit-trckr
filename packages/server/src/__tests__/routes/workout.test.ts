@@ -8,22 +8,19 @@ import { jest, expect, describe, it, beforeEach } from '@jest/globals';
 describe('Workout Routes', () => {
   let mockRequest: Partial<Request>;
   let mockResponse: Partial<Response>;
-  let nextFunction: NextFunction;
-  let authToken: string;
+  let nextFunction: jest.Mock;
 
   beforeEach(() => {
     mockRequest = {};
     mockResponse = {
-      json: jest.fn().mockReturnThis(),
-      status: jest.fn().mockReturnThis()
+      json: jest.fn().mockReturnThis() as any,
+      status: jest.fn().mockReturnThis() as any,
+      send: jest.fn().mockReturnThis() as any
     };
     nextFunction = jest.fn();
 
     // Reset all mocks
     jest.clearAllMocks();
-
-    // Mock authentication token
-    authToken = 'mock-auth-token';
   });
 
   describe('POST /api/workouts', () => {
@@ -54,9 +51,10 @@ describe('Workout Routes', () => {
 
       prismaMock.workout.create.mockResolvedValue(mockWorkout);
 
+      const token = 'valid-token';
       const response = await request(app)
         .post('/api/workouts')
-        .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(validWorkout);
 
       expect(response.status).toBe(201);
@@ -70,9 +68,10 @@ describe('Workout Routes', () => {
         date: new Date().toISOString()
       };
 
+      const token = 'valid-token';
       const response = await request(app)
         .post('/api/workouts')
-        .set('Authorization', `Bearer ${authToken}`)
+        .set('Authorization', `Bearer ${token}`)
         .send(invalidWorkout);
 
       expect(response.status).toBe(400);
@@ -113,9 +112,10 @@ describe('Workout Routes', () => {
 
       prismaMock.workout.findMany.mockResolvedValue(mockWorkouts);
 
+      const token = 'valid-token';
       const response = await request(app)
         .get('/api/workouts')
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.body)).toBe(true);
@@ -144,9 +144,10 @@ describe('Workout Routes', () => {
 
       prismaMock.workout.findUnique.mockResolvedValue(mockWorkout);
 
+      const token = 'valid-token';
       const response = await request(app)
         .get('/api/workouts/1')
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(200);
       expect(response.body).toHaveProperty('id', '1');
@@ -155,9 +156,10 @@ describe('Workout Routes', () => {
     it('should return 404 for non-existent workout', async () => {
       prismaMock.workout.findUnique.mockResolvedValue(null);
 
+      const token = 'valid-token';
       const response = await request(app)
         .get('/api/workouts/999')
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(404);
     });
