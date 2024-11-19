@@ -1,7 +1,7 @@
 // src/routes/user.ts
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { validateRequest } from '../middleware/validate';
 import { userSchema } from '../validators/schemas';
@@ -12,8 +12,8 @@ const prisma = new PrismaClient();
 router.post('/register', validateRequest(userSchema), async (req, res) => {
   try {
     const { email, password, name } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
     const user = await prisma.user.create({
       data: {
         email,
@@ -33,8 +33,8 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await prisma.user.findUnique({ where: { email } });
-    
-    if (!user || !await bcrypt.compare(password, user.password)) {
+
+    if (!user || !await bcryptjs.compare(password, user.password)) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
