@@ -1,13 +1,22 @@
 // packages/server/src/types/jest.d.ts
-import { jest } from '@jest/globals';
+
+import { Mock } from 'jest-mock';
+import { PrismaClient } from '@prisma/client';
 
 declare global {
-  const jest: typeof jest;
-  const describe: typeof jest.describe;
-  const expect: typeof jest.expect;
-  const it: typeof jest.it;
-  const beforeEach: typeof jest.beforeEach;
-  const afterEach: typeof jest.afterEach;
-  const beforeAll: typeof jest.beforeAll;
-  const afterAll: typeof jest.afterAll;
+  namespace jest {
+    interface Matchers<R> {
+      toHaveProperty(key: string, value?: any): R;
+    }
+  }
+}
+
+declare module '@jest/globals' {
+  export const jest: {
+    fn(): Mock;
+    fn<T extends (...args: any[]) => any>(implementation?: T): Mock<T>;
+    clearAllMocks(): void;
+    mock(moduleName: string, factory?: () => any): void;
+    requireActual<T extends unknown>(moduleName: string): T;
+  };
 }

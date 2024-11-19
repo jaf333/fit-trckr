@@ -1,4 +1,3 @@
-// src/routes/user.ts
 import { Router } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcryptjs from 'bcryptjs';
@@ -12,6 +11,13 @@ const prisma = new PrismaClient();
 router.post('/register', validateRequest(userSchema), async (req, res) => {
   try {
     const { email, password, name } = req.body;
+
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(409).json({ error: 'Email already registered' });
+    }
+
     const hashedPassword = await bcryptjs.hash(password, 10);
 
     const user = await prisma.user.create({
@@ -23,7 +29,13 @@ router.post('/register', validateRequest(userSchema), async (req, res) => {
     });
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
-    res.json({ token });
+    // Cambiado a 201 para crear recursos
+    res.status(201).json({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      token
+    });
   } catch (error) {
     res.status(400).json({ error: 'Registration failed' });
   }
@@ -39,7 +51,14 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!);
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }
+    });
   } catch (error) {
     res.status(400).json({ error: 'Login failed' });
   }
