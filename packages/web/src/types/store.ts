@@ -1,4 +1,5 @@
 import type { Profile } from './profile';
+import type { DashboardState } from './dashboard';
 
 export interface ProfileState {
   data: Profile | null;
@@ -7,7 +8,7 @@ export interface ProfileState {
 }
 
 export interface AuthState {
-  user: any; // Ajusta este tipo según tu implementación de auth
+  user: any;
   loading: boolean;
   error: string | null;
 }
@@ -15,4 +16,5 @@ export interface AuthState {
 export interface RootState {
   profile: ProfileState;
   auth: AuthState;
+  dashboard: DashboardState;
 }

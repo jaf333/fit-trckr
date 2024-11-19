@@ -1,15 +1,13 @@
-// src/store/store.ts
-
 import { configureStore } from '@reduxjs/toolkit';
-import type { ThunkAction, Action } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
 import profileReducer from '../features/profile/profileSlice';
-import type { RootState } from '../types/store';
+import dashboardReducer from '../features/dashboard/dashboardSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     profile: profileReducer,
+    dashboard: dashboardReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -23,10 +21,3 @@ export const store = configureStore({
 });
 
 export type AppDispatch = typeof store.dispatch;
-
-export type AppThunk<ReturnType = void> = ThunkAction<
-  ReturnType,
-  RootState,
-  unknown,
-  Action<string>
->;
