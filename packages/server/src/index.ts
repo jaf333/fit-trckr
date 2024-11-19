@@ -1,29 +1,44 @@
-import express, { Request, Response } from 'express';
+// src/index.ts
+import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client';
+import { userRouter } from './routes/user';
+import { workoutRouter } from './routes/workout';
+import { authMiddleware } from './middleware/auth';
+import { profileRouter } from './routes/profile';
+import { exerciseTemplateRouter } from './routes/exerciseTemplate';
 
-// Load environment variables
-dotenv.config();
-
+const prisma = new PrismaClient();
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Basic test route
-app.get('/health', (_req: Request, res: Response) => {
-  res.json({ 
-    status: 'ok',
-    timestamp: new Date().toISOString()
-  });
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok' });
 });
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-  console.log('Press CTRL-C to stop');
+app.use('/api/users', userRouter);
+app.use('/api/workouts', authMiddleware, workoutRouter);
+app.use('/api/profile', profileRouter);
+app.use('/api/exercise-templates', exerciseTemplateRouter);
+
+app.use((error: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error(error.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-export default app;
+async function main() {
+  try {
+    await prisma.$connect();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+}
+
+main();
