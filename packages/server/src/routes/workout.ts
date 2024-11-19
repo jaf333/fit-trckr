@@ -7,6 +7,79 @@ import { workoutSchema } from '../validators/schemas'
 const router = Router();
 const prisma = new PrismaClient();
 
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Exercise:
+ *       type: object
+ *       required:
+ *         - sets
+ *         - reps
+ *         - weight
+ *       properties:
+ *         sets:
+ *           type: integer
+ *           minimum: 1
+ *           description: Number of sets performed
+ *         reps:
+ *           type: integer
+ *           minimum: 1
+ *           description: Number of repetitions per set
+ *         weight:
+ *           type: number
+ *           description: Weight used in kilograms
+ *         notes:
+ *           type: string
+ *           description: Optional notes for the exercise
+ *
+ *     Workout:
+ *       type: object
+ *       required:
+ *         - name
+ *         - date
+ *         - exercises
+ *       properties:
+ *         name:
+ *           type: string
+ *           description: Name of the workout
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: Date and time of the workout
+ *         exercises:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Exercise'
+ *           description: List of exercises performed in the workout
+ */
+
+/**
+ * @swagger
+ * /api/workouts:
+ *   post:
+ *     summary: Create a new workout
+ *     tags: [Workouts]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Workout'
+ *     responses:
+ *       200:
+ *         description: Workout created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Workout'
+ *       400:
+ *         description: Failed to create workout
+ *       401:
+ *         description: Unauthorized
+ */
 router.post('/', validateRequest(workoutSchema), async (req, res) => {
   try {
     const { name, date, exercises } = req.body;
@@ -32,6 +105,28 @@ router.post('/', validateRequest(workoutSchema), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/workouts:
+ *   get:
+ *     summary: Get all workouts for user
+ *     tags: [Workouts]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of workouts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Workout'
+ *       400:
+ *         description: Failed to fetch workouts
+ *       401:
+ *         description: Unauthorized
+ */
 router.get('/', async (req, res) => {
   try {
     const userId = (req.user as any).userId;
