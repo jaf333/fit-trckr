@@ -1,3 +1,4 @@
+// web/src/pages/dashboard/Dashboard.tsx
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { fetchDashboardData } from '@/features/dashboard/dashboardSlice';

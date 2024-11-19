@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { Profile, ProfileFormData, ProfileUpdateData } from '../../types/profile';
+import type { ProfileFormData, ProfileUpdateData } from '../../types/profile';
 import type { ProfileState } from '../../types/store';
 import { apiClient } from '../../services/api/client';
+
 
 const initialState: ProfileState = {
   data: null,
