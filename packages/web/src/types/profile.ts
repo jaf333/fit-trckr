@@ -1,3 +1,5 @@
+// src/types/profile.ts
+
 export interface Profile {
     id: string;
     userId: string;

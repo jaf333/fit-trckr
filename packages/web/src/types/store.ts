@@ -6,12 +6,13 @@ export interface ProfileState {
   error: string | null;
 }
 
+export interface AuthState {
+  user: any; // Ajusta este tipo según tu implementación de auth
+  loading: boolean;
+  error: string | null;
+}
+
 export interface RootState {
   profile: ProfileState;
-  // Añade aquí otros estados
-  auth: {
-    user: any; // Define el tipo correcto para auth si lo tienes
-    loading: boolean;
-    error: string | null;
-  };
+  auth: AuthState;
 }

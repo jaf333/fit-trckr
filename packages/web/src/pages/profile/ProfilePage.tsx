@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../store';
 import { fetchProfile, createProfile, updateProfile } from '../../features/profile/profileSlice';
 import { ProfileForm } from '../../components/forms/ProfileForm/ProfileForm';
-import { Card } from '@/components/ui';
+import { Card } from '@/components/ui/Card';
 import type { ProfileFormData } from '../../types/profile';
 import type { RootState } from '../../types/store';
 
