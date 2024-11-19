@@ -21,6 +21,11 @@
 - Prisma as ORM
 - JWT for authentication
 
+### Testing
+- Jest
+- Supertest
+- TypeScript Jest
+
 ### Infrastructure
 - Docker for containerization
 - GitHub Actions for CI/CD (planned)
@@ -36,17 +41,32 @@ fit-trackr/
 │   │   └── [Pending setup]
 │   ├── server/       # Node.js backend
 │   │   ├── src/
+│   │   │   ├── __tests__/      # Test files
+│   │   │   │   ├── user.test.ts
+│   │   │   │   └── workout.test.ts
 │   │   │   ├── config/
 │   │   │   │   └── prisma.ts
 │   │   │   ├── controllers/
 │   │   │   ├── middleware/
+│   │   │   │   ├── auth.ts
+│   │   │   │   └── validate.ts
 │   │   │   ├── models/
 │   │   │   ├── routes/
+│   │   │   │   ├── user.ts
+│   │   │   │   ├── workout.ts
+│   │   │   │   ├── profile.ts
+│   │   │   │   └── exerciseTemplate.ts
 │   │   │   ├── types/
-│   │   │   │   └── models.ts
+│   │   │   │   ├── models.ts
+│   │   │   │   └── express.d.ts
+│   │   │   ├── validators/
+│   │   │   │   └── schemas.ts
+│   │   │   ├── setupTests.ts
 │   │   │   └── index.ts
 │   │   ├── prisma/
+│   │   │   ├── migrations/
 │   │   │   └── schema.prisma
+│   │   ├── jest.config.mjs
 │   │   ├── .env
 │   │   ├── .env.example
 │   │   ├── package.json
@@ -73,6 +93,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   workouts      Workout[]
   profile       Profile?
+  exerciseTemplates ExerciseTemplate[]
 }
 
 model Profile {
@@ -112,6 +133,20 @@ model Exercise {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
+
+model ExerciseTemplate {
+  id            String    @id @default(cuid())
+  name          String
+  category      String
+  description   String?
+  defaultSets   Int?
+  defaultReps   Int?
+  defaultWeight Float?
+  userId        String
+  user          User      @relation(fields: [userId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
 ```
 
 ## Development Progress
@@ -128,18 +163,30 @@ model Exercise {
 - Created database models
 - Set up development environment
 
-### Phase 3: Server Development 🚧
+### Phase 3: Server Development ✅
 - Basic Express server setup
 - Environment configuration
 - TypeScript types defined
 - Prisma client configuration
+- Authentication middleware
+- Route implementation (users, workouts, profiles)
+- Exercise templates
+- Input validation with Zod
+
+### Phase 4: Testing Setup 🚧
+- Jest configuration
+- Test environment setup
+- User routes tests
+- Workout routes tests
+- Profile routes tests pending
+- Exercise template tests pending
 
 ### Pending Phases
-- Authentication implementation
-- API routes development
+- API documentation
 - Frontend setup
 - Mobile app development
 - Deployment configuration
+- CI/CD setup
 
 ## Environment Setup Instructions
 
@@ -164,6 +211,18 @@ docker compose up -d
 npm run dev:server
 ```
 
+### Server Package Setup
+```bash
+cd packages/server
+
+# Install dependencies
+npm install express cors jsonwebtoken bcrypt @prisma/client
+npm install -D @types/express @types/cors @types/jsonwebtoken @types/bcrypt typescript ts-node
+
+# Install testing dependencies
+npm install --save-dev jest @types/jest ts-jest supertest @types/supertest @babel/core @babel/preset-env @babel/preset-typescript
+```
+
 ### Environment Variables
 Server (.env):
 ```
@@ -172,14 +231,82 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/fit_trackr"
 JWT_SECRET="your-secret-key-change-this-in-production"
 ```
 
-## Git Workflow
-- Feature branches for new functionality
-- Descriptive commit messages following conventional commits
-- Regular updates with development progress tweets
-- Main branch protection (planned)
+## Testing Setup
+- Jest configuration in jest.config.mjs
+- Test files in src/__tests__/
+- Setup file in src/setupTests.ts
+- Run tests with `npm run test`
+
+## Git Workflow & Commits
+Example of structured commits:
+```bash
+git checkout -b feature/server-setup
+git add .
+git commit -m "feat: implement basic server setup with auth
+
+- Add Express server configuration
+- Implement JWT authentication
+- Create user routes for registration/login
+- Add workout routes with CRUD operations
+- Set up TypeScript configuration"
+git push origin feature/server-setup
+```
 
 ## Documentation Strategy
 - README updates for major changes
 - Twitter updates for development progress
 - Code comments for complex logic
 - Type definitions for data structures
+- API documentation (pending)
+
+## Next Steps
+1. Complete testing setup
+   - Fix any remaining test configuration issues
+   - Add more test cases
+   - Add test coverage reporting
+
+2. API Documentation
+   - Set up Swagger/OpenAPI
+   - Document all endpoints
+   - Add response examples
+
+3. Error Handling
+   - Implement global error handler
+   - Add custom error classes
+   - Improve error responses
+
+4. Frontend Development
+   - Set up React application
+   - Configure TypeScript
+   - Implement basic UI components
+
+5. Security Enhancements
+   - Rate limiting
+   - Request validation
+   - Security headers
+   - CORS configuration
+
+## Contributing Guidelines
+1. Create feature branches from main
+2. Follow conventional commits
+3. Include tests for new features
+4. Update documentation
+5. Create detailed pull requests
+
+## Useful Commands
+```bash
+# Database
+docker compose up -d              # Start database
+npx prisma migrate dev           # Run migrations
+npx prisma generate              # Generate Prisma client
+
+# Development
+npm run dev                      # Start development server
+npm run build                    # Build project
+npm run test                     # Run tests
+npm run test:watch              # Run tests in watch mode
+
+# TypeScript
+npm run type-check              # Check types
+npm run lint                    # Run linter
+```
